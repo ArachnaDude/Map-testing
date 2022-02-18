@@ -12,10 +12,14 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet";
+import { getLocationByOsmIdOsmtype } from "../utils/api";
 
-const Map = () => {
+const Map = ({ searchResult }) => {
   const [markerPosition, setMarkerPosition] = useState(null);
+  const [placeData, setPlaceData] = useState({});
   //   let testLocation = [53.722761112180216, -1.8599722637531162];
+
+  useEffect(() => {}, []);
 
   const LocationMarker = () => {
     // const map = useMapEvents({
@@ -33,17 +37,40 @@ const Map = () => {
       click: () => {},
     });
 
-    return markerPosition === null ? null : (
-      <Marker position={markerPosition}>
-        <Popup>
-          <p>
-            lat = {markerPosition.lat.toFixed(4)}
-            <br />
-            lng = {markerPosition.lng.toFixed(4)}
-          </p>
-        </Popup>
-      </Marker>
-    );
+    return searchResult.length ? (
+      <>
+        {searchResult.map((place) => {
+          let location = [place.lat, place.lon];
+          // console.log(place);
+          return (
+            <Marker
+              key={place.place_id}
+              position={location}
+              eventHandlers={{
+                click: () => {
+                  getLocationByOsmIdOsmtype(place.osm_type, place.osm_id).then(
+                    (res) => {
+                      // setPlaceData(res);
+                      // console.log(placeData);
+                    }
+                  );
+                },
+              }}
+            >
+              <Popup>
+                <div>
+                  <h2>{}</h2>
+                  <p>{place.display_name}</p>
+                  <p>{place.address.city}</p>
+                  <p>{place.address.county}</p>
+                  <p>{place.address.postcode}</p>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </>
+    ) : null;
   };
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { getLocationByName } from "../utils/api";
-import SearchResult from "./SearchResult";
+import Map from "./Map";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,8 +16,8 @@ const Search = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(`submitting ${searchTerm}`); // <--------------------
-    getLocationByName(searchTerm).then((res) => {
-      console.log(res);
+    getLocationByName(searchTerm).then((locationsFromApi) => {
+      setSearchResult(locationsFromApi);
     });
     setSearchTerm("");
   };
@@ -44,7 +44,8 @@ const Search = () => {
           </label>
           <button>Search</button>
         </form>
-        <SearchResult searchResult={searchResult} />
+
+        <Map searchResult={searchResult} />
       </div>
     </>
   );
